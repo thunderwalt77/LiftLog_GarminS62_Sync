@@ -17,6 +17,7 @@ import SettingsIcon from '@expo/material-symbols/settings.xml';
 import StarIcon from '@expo/material-symbols/star.xml';
 import TerminalIcon from '@expo/material-symbols/terminal.xml';
 import TranslateIcon from '@expo/material-symbols/translate.xml';
+import WatchIcon from '@expo/material-symbols/watch.xml';
 import { SettingsPage } from '@/components/layout/settings-page';
 import { SegmentedGroup, SegmentListFormElement } from '@/components/foundation/segmented-list';
 import { SegmentedListLink } from '@/components/foundation/segmented-list-link';
@@ -117,6 +118,14 @@ export default function SettingsPageIndex() {
           systemImage="server.rack"
           onPress={() => push('/settings/backends')}
         />
+        {Platform.OS === 'android' ? (
+          <SegmentedListLink
+            label={t('garmin.watch.title')}
+            icon={WatchIcon}
+            systemImage="applewatch"
+            onPress={() => push('/settings/garmin-watch')}
+          />
+        ) : undefined}
         <SegmentedListLink
           label={t('backup.export_backup_restore.title')}
           icon={SettingsBackupRestoreIcon}

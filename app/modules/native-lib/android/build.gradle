@@ -41,3 +41,8 @@ android {
     abortOnError false
   }
 }
+
+dependencies {
+  // Garmin Connect IQ Mobile SDK: messages to the LiftLog watch app via Garmin Connect Mobile.
+  implementation "com.garmin.connectiq:ciq-companion-app-sdk:2.4.0@aar"
+}

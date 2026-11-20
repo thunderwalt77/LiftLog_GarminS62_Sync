@@ -828,5 +828,16 @@
   "exercise.alternatives.body": "Optional. On your Garmin watch you can swap to one of these for a single workout. Your plan and its progression stay the same.",
   "exercise.alternatives.move_up.button": "Move up",
   "exercise.alternatives.move_down.button": "Move down",
-  "exercise.alternatives.remove.button": "Remove alternative"
+  "exercise.alternatives.remove.button": "Remove alternative",
+  "garmin.watch.title": "Garmin watch",
+  "garmin.watch.subtitle": "Send your active plan, with its alternative exercises, to the LiftLog app on your Garmin watch. Open LiftLog on the watch first.",
+  "garmin.watch.send.button": "Send plan to watch",
+  "garmin.watch.send.body": "Open LiftLog on the watch, then tap here.",
+  "garmin.watch.result.sent": "Sent to {watch}. The watch confirmed it.",
+  "garmin.watch.result.unsupported": "Watch sync is only available on Android.",
+  "garmin.watch.result.sdk": "Garmin Connect is not ready. Check it is installed and signed in.",
+  "garmin.watch.result.no_watch": "No connected Garmin watch found. Check Bluetooth and Garmin Connect.",
+  "garmin.watch.result.send_failed": "Sending failed. Is LiftLog installed on the watch?",
+  "garmin.watch.result.no_reply": "The watch did not answer. Open LiftLog on the watch and try again.",
+  "garmin.watch.result.rejected": "The watch rejected the plan. Try sending it again."
 }
