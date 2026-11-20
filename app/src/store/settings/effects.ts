@@ -93,16 +93,15 @@ export function applySettingsEffects(addEffect: AddEffectFn) {
       const proToken = await preferenceService.getProToken();
       dispatch(setProToken(proToken));
 
-      if (!__DEV__) {
-        if (Platform.OS === 'ios') {
-          Purchases.configure({
-            apiKey: process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY!,
-          });
-        } else if (Platform.OS === 'android') {
-          Purchases.configure({
-            apiKey: process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY!,
-          });
-        }
+      // Builds without a RevenueCat key (forks, self-built APKs) skip purchases instead of failing hydration.
+      const revenueCatKey =
+        Platform.OS === 'ios'
+          ? (process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY as string | undefined)
+          : Platform.OS === 'android'
+            ? (process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY as string | undefined)
+            : undefined;
+      if (!__DEV__ && revenueCatKey) {
+        Purchases.configure({ apiKey: revenueCatKey });
       }
       dispatch(setIsHydrated(true));
       dispatch(initializeStoredSessionsStateSlice());
