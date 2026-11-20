@@ -822,5 +822,11 @@
   "whats_new.deloads.title": "Deload workouts",
   "whats_new.deloads.body": "Taking it easy today? Tap ⋯ during a workout and choose Deload. It won't count towards your progression, so next time you pick up where you left off.",
   "workout.deload.title": "Deload workout",
-  "workout.deload.body": "Next time, your weights will pick up from where you left off before the deload."
+  "workout.deload.body": "Next time, your weights will pick up from where you left off before the deload.",
+  "exercise.alternatives.title": "Alternatives",
+  "exercise.alternatives.add.button": "Add alternative",
+  "exercise.alternatives.body": "Optional. On your Garmin watch you can swap to one of these for a single workout. Your plan and its progression stay the same.",
+  "exercise.alternatives.move_up.button": "Move up",
+  "exercise.alternatives.move_down.button": "Move down",
+  "exercise.alternatives.remove.button": "Remove alternative"
 }

@@ -138,6 +138,13 @@
         "resistance": {
           "$ref": "#/definitions/Resistance",
           "description": "Where this movement's load comes from: the whole stored weight (`external`), what is added on top of the lifter (`bodyweight`), or nothing at all (`none`, e.g. crunches)."
+        },
+        "alternatives": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Names of library exercises that may replace this one for a single workout, in the order they are offered. Omitted when there are none."
         }
       },
       "required": [

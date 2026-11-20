@@ -11,6 +11,7 @@ import { SegmentedListSwitch } from '@/components/foundation/segmented-list-swit
 import { useRouteEditor } from '@/hooks/useRouteEditor';
 import { ProgressionRulesEditor } from '@/components/exercise-editor/progressive-overload';
 import { SharedFieldsEditor } from '@/components/exercise-editor/shared-fields-editor';
+import { AlternativesEditor } from '@/components/exercise-editor/alternatives-editor';
 import { spacing, useAppTheme } from '@/hooks/useAppTheme';
 import {
   ExerciseBlueprint,
@@ -134,6 +135,8 @@ export function WeightedExerciseEditor({
       <TitledSection title={t('exercise.progressive_overload.label')}>
         <ProgressionRulesEditor exercise={exercise} onChange={(progression) => updateExercise({ progression })} />
       </TitledSection>
+
+      <AlternativesEditor exercise={exercise} onChange={(alternatives) => updateExercise({ alternatives })} />
     </>
   );
 }

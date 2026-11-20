@@ -764,6 +764,7 @@ export interface WeightedExerciseBlueprintInit {
   notes?: string;
   link?: string;
   resistance?: Resistance;
+  alternatives?: string[];
   /** Authoring shorthand for `plannedSets`, projected through {@link plannedSetsOf}. */
   sets?: number;
   repsConfig?: RepsConfig;
@@ -781,9 +782,14 @@ export class WeightedExerciseBlueprint {
     readonly notes: string,
     readonly link: string,
     readonly resistance: Resistance = 'external',
+    /**
+     * Names of exercises from the library that may stand in for this one for a single workout (offered
+     * on the watch, in order). Choosing one never edits the plan.
+     */
+    readonly alternatives: string[] = [],
   ) {}
 
-  /** Build a blueprint from named fields; preferred over the constructor's eight positional arguments. */
+  /** Build a blueprint from named fields; preferred over the constructor's positional arguments. */
   static of(init: WeightedExerciseBlueprintInit = {}): WeightedExerciseBlueprint {
     return new WeightedExerciseBlueprint(
       init.name ?? '',
@@ -794,6 +800,7 @@ export class WeightedExerciseBlueprint {
       init.notes ?? '',
       init.link ?? '',
       init.resistance ?? 'external',
+      init.alternatives ?? [],
     );
   }
 
@@ -811,6 +818,7 @@ export class WeightedExerciseBlueprint {
       json.notes,
       json.link,
       json.resistance,
+      json.alternatives ?? [],
     );
   }
 
@@ -883,7 +891,9 @@ export class WeightedExerciseBlueprint {
       this.supersetWithNext === other.supersetWithNext &&
       this.notes === other.notes &&
       this.link === other.link &&
-      this.resistance === other.resistance
+      this.resistance === other.resistance &&
+      this.alternatives.length === other.alternatives.length &&
+      this.alternatives.every((name, i) => name === other.alternatives[i])
     );
   }
 
@@ -898,6 +908,7 @@ export class WeightedExerciseBlueprint {
       notes: this.notes,
       link: this.link,
       resistance: this.resistance,
+      ...(this.alternatives.length > 0 ? { alternatives: [...this.alternatives] } : {}),
     };
   }
 
@@ -914,6 +925,7 @@ export class WeightedExerciseBlueprint {
       other.notes ?? this.notes,
       other.link ?? this.link,
       other.resistance ?? this.resistance,
+      other.alternatives ?? this.alternatives,
     );
   }
 }

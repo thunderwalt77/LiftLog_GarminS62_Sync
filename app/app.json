@@ -90,7 +90,7 @@
     "scheme": "liftlog",
     "android": {
       "versionCode": 1,
-      "package": "com.limajuice.liftlog",
+      "package": "com.thunderwalt.liftlog",
       "softwareKeyboardLayoutMode": "pan",
       "permissions": [
         "com.android.vending.BILLING",

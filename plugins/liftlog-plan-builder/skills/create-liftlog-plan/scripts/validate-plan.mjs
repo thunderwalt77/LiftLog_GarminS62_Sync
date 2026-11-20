@@ -973,12 +973,37 @@ var require_validate_schema = __commonJS({
             errors++;
           }
         }
+        if (data.alternatives !== void 0) {
+          let data11 = data.alternatives;
+          if (Array.isArray(data11)) {
+            const len2 = data11.length;
+            for (let i2 = 0; i2 < len2; i2++) {
+              if (typeof data11[i2] !== "string") {
+                const err19 = { instancePath: instancePath + "/alternatives/" + i2, schemaPath: "#/properties/alternatives/items/type", keyword: "type", params: { type: "string" }, message: "must be string" };
+                if (vErrors === null) {
+                  vErrors = [err19];
+                } else {
+                  vErrors.push(err19);
+                }
+                errors++;
+              }
+            }
+          } else {
+            const err20 = { instancePath: instancePath + "/alternatives", schemaPath: "#/properties/alternatives/type", keyword: "type", params: { type: "array" }, message: "must be array" };
+            if (vErrors === null) {
+              vErrors = [err20];
+            } else {
+              vErrors.push(err20);
+            }
+            errors++;
+          }
+        }
       } else {
-        const err19 = { instancePath, schemaPath: "#/type", keyword: "type", params: { type: "object" }, message: "must be object" };
+        const err21 = { instancePath, schemaPath: "#/type", keyword: "type", params: { type: "object" }, message: "must be object" };
         if (vErrors === null) {
-          vErrors = [err19];
+          vErrors = [err21];
         } else {
-          vErrors.push(err19);
+          vErrors.push(err21);
         }
         errors++;
       }

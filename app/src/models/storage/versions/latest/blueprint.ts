@@ -88,6 +88,11 @@ export interface WeightedExerciseBlueprintJSON {
    * top of the lifter (`bodyweight`), or nothing at all (`none`, e.g. crunches).
    */
   resistance: ResistanceJSON;
+  /**
+   * Names of library exercises that may replace this one for a single workout, in the order they are
+   * offered. Omitted when there are none.
+   */
+  alternatives?: string[];
 }
 
 export type ResistanceJSON = 'none' | 'external' | 'bodyweight';
