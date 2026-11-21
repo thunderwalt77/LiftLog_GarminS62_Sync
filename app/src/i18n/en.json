@@ -839,5 +839,6 @@
   "garmin.watch.result.no_watch": "No connected Garmin watch found. Check Bluetooth and Garmin Connect.",
   "garmin.watch.result.send_failed": "Sending failed. Is LiftLog installed on the watch?",
   "garmin.watch.result.no_reply": "The watch did not answer. Open LiftLog on the watch and try again.",
-  "garmin.watch.result.rejected": "The watch rejected the plan. Try sending it again."
+  "garmin.watch.result.rejected": "The watch rejected the plan. Try sending it again.",
+  "garmin.watch.result.error": "Something went wrong while sending. Copy the logs from Settings and share them."
 }

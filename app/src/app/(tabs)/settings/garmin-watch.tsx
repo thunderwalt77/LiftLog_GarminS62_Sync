@@ -14,11 +14,12 @@ const failureText: Record<Exclude<WatchSyncResult, { ok: true }>['reason'], Tran
   'send-failed': 'garmin.watch.result.send_failed',
   'no-reply': 'garmin.watch.result.no_reply',
   rejected: 'garmin.watch.result.rejected',
+  error: 'garmin.watch.result.error',
 };
 
 export default function GarminWatchPage() {
   const { t } = useTranslate();
-  const { watchSyncService } = useServices();
+  const { watchSyncService, logger } = useServices();
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<WatchSyncResult>();
 
@@ -26,7 +27,11 @@ export default function GarminWatchPage() {
     setSending(true);
     setResult(undefined);
     try {
-      setResult(await watchSyncService.sendProgramme());
+      const outcome = await watchSyncService.sendProgramme();
+      if (!outcome.ok) {
+        logger.error('Send plan to watch failed', outcome);
+      }
+      setResult(outcome);
     } finally {
       setSending(false);
     }

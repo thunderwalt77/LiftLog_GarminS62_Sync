@@ -63,7 +63,11 @@ function fakeWatch(
 describe('WatchSyncService.sendProgramme', () => {
   it('sends the active plan and succeeds when the watch confirms', async () => {
     const watch = fakeWatch({ ok: true });
-    const result = await new WatchSyncService(db, () => state, () => watch.bridge).sendProgramme();
+    const result = await new WatchSyncService(
+      db,
+      () => state,
+      () => watch.bridge,
+    ).sendProgramme();
 
     expect(result).toEqual({ ok: true, watch: 'Approach S62' });
     expect(watch.sent.map((m) => m.t)).toEqual(['pb', 'pw', 'pe']);
@@ -72,7 +76,13 @@ describe('WatchSyncService.sendProgramme', () => {
 
   it('reports a rejected plan', async () => {
     const watch = fakeWatch({ ok: false });
-    expect(await new WatchSyncService(db, () => state, () => watch.bridge).sendProgramme()).toEqual({
+    expect(
+      await new WatchSyncService(
+        db,
+        () => state,
+        () => watch.bridge,
+      ).sendProgramme(),
+    ).toEqual({
       ok: false,
       reason: 'rejected',
     });
@@ -80,7 +90,11 @@ describe('WatchSyncService.sendProgramme', () => {
 
   it('stops at the first message that fails to send', async () => {
     const watch = fakeWatch({ sendStatus: 'FAILURE_DEVICE_NOT_CONNECTED' });
-    const result = await new WatchSyncService(db, () => state, () => watch.bridge).sendProgramme();
+    const result = await new WatchSyncService(
+      db,
+      () => state,
+      () => watch.bridge,
+    ).sendProgramme();
 
     expect(result).toEqual({ ok: false, reason: 'send-failed', detail: 'FAILURE_DEVICE_NOT_CONNECTED' });
     expect(watch.sent).toHaveLength(1);
@@ -88,14 +102,40 @@ describe('WatchSyncService.sendProgramme', () => {
 
   it('needs a connected watch', async () => {
     const watch = fakeWatch({ devices: [{ id: '7', name: 'Approach S62', status: 'NOT_CONNECTED' }] });
-    expect(await new WatchSyncService(db, () => state, () => watch.bridge).sendProgramme()).toEqual({
+    expect(
+      await new WatchSyncService(
+        db,
+        () => state,
+        () => watch.bridge,
+      ).sendProgramme(),
+    ).toEqual({
       ok: false,
       reason: 'no-watch',
     });
   });
 
+  it('reports an error instead of throwing', async () => {
+    const watch = fakeWatch({ ok: true });
+    watch.bridge.send = () => Promise.reject(new Error('bridge exploded'));
+    expect(
+      await new WatchSyncService(
+        db,
+        () => state,
+        () => watch.bridge,
+      ).sendProgramme(),
+    ).toEqual({
+      ok: false,
+      reason: 'error',
+      detail: 'bridge exploded',
+    });
+  });
+
   it('is unsupported without the native bridge', async () => {
-    const service = new WatchSyncService(db, () => state, () => undefined);
+    const service = new WatchSyncService(
+      db,
+      () => state,
+      () => undefined,
+    );
     expect(service.isSupported).toBe(false);
     expect(await service.sendProgramme()).toEqual({ ok: false, reason: 'unsupported' });
   });

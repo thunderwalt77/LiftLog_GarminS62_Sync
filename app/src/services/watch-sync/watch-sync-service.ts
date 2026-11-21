@@ -21,7 +21,7 @@ export type WatchSyncResult =
   | { ok: true; watch: string }
   | {
       ok: false;
-      reason: 'unsupported' | 'sdk' | 'no-watch' | 'send-failed' | 'no-reply' | 'rejected';
+      reason: 'unsupported' | 'sdk' | 'no-watch' | 'send-failed' | 'no-reply' | 'rejected' | 'error';
       detail?: string;
     };
 
@@ -38,8 +38,16 @@ export class WatchSyncService {
     return this.getBridge() !== undefined;
   }
 
-  /** Sends the active plan. The LiftLog app must be open on the watch to receive it. */
+  /** Sends the active plan. The LiftLog app must be open on the watch to receive it. Never throws. */
   async sendProgramme(): Promise<WatchSyncResult> {
+    try {
+      return await this.trySendProgramme();
+    } catch (error) {
+      return { ok: false, reason: 'error', detail: error instanceof Error ? error.message : String(error) };
+    }
+  }
+
+  private async trySendProgramme(): Promise<WatchSyncResult> {
     const bridge = this.getBridge();
     if (!bridge) {
       return { ok: false, reason: 'unsupported' };
