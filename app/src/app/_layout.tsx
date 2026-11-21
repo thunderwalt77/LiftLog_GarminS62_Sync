@@ -3,6 +3,7 @@ import { I18nManager, LogBox, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppStateProvider } from '@/components/app-shell/app-state-provider';
 import { PlanImportGate } from '@/components/app-shell/plan-import-gate';
+import { GarminWatchGate } from '@/components/app-shell/garmin-watch-gate';
 import { SnackbarProvider } from '@/components/app-shell/snackbar-provider';
 import { ConfirmProvider } from '@/components/foundation/confirm';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -48,6 +49,7 @@ export default function RootLayout() {
                   <ConfirmProvider>
                     {Platform.OS === 'android' && <StatusBar style="auto" />}
                     <PlanImportGate />
+                    <GarminWatchGate />
                     <Layout />
                   </ConfirmProvider>
                 </SnackbarProvider>

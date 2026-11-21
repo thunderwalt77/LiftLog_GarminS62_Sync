@@ -1,5 +1,7 @@
-import { readLatestExercises } from '@/db/sessions';
+import { readExistingSessionIds, readLatestExercises, writeSession } from '@/db/sessions';
 import type { RootState } from '@/store';
+import { sessionsChanged } from '@/store/stored-sessions';
+import { isWatchWorkout, watchWorkoutToSession } from '@/services/watch-sync/watch-import';
 import {
   buildWatchProgramme,
   toWatchMessages,
@@ -14,6 +16,7 @@ export interface GarminBridge {
   initialize(): Promise<string>;
   getDevices(): Promise<{ id: string; name: string; status: string }[]>;
   send(deviceId: string, json: string): Promise<string>;
+  listen(deviceId: string): Promise<string>;
   addListener(event: 'onMessage', listener: (e: { deviceId: string; json: string }) => void): { remove(): void };
 }
 
@@ -25,14 +28,101 @@ export type WatchSyncResult =
       detail?: string;
     };
 
+/** What the Garmin watch screen shows about workouts received from the watch. */
+export interface WatchReceipt {
+  imported: number;
+  duplicates: number;
+  failed: number;
+  lastName?: string;
+  lastAt?: number;
+}
+
 const replyTimeoutMs = 20_000;
 
 export class WatchSyncService {
+  private listening = false;
+  private receipt: WatchReceipt = { imported: 0, duplicates: 0, failed: 0 };
+  private receiptListeners = new Set<(receipt: WatchReceipt) => void>();
+
   constructor(
     private db: ExpoSQLiteDatabase,
     private getState: () => RootState,
+    private dispatch: (action: ReturnType<typeof sessionsChanged>) => unknown,
     private getBridge: () => GarminBridge | undefined = getGarminModule,
   ) {}
+
+  get lastReceipt() {
+    return this.receipt;
+  }
+
+  onReceipt(listener: (receipt: WatchReceipt) => void) {
+    this.receiptListeners.add(listener);
+    return () => {
+      this.receiptListeners.delete(listener);
+    };
+  }
+
+  /**
+   * Accepts finished workouts from the watch while LiftLog is open. Each one is saved before it is
+   * acknowledged, so the watch only deletes a workout LiftLog has stored. Never throws.
+   */
+  async startListening(): Promise<void> {
+    const bridge = this.getBridge();
+    if (!bridge || this.listening) {
+      return;
+    }
+    try {
+      if ((await bridge.initialize()) !== 'READY') {
+        return;
+      }
+      this.listening = true;
+      bridge.addListener('onMessage', (event) => void this.onWatchMessage(bridge, event));
+      for (const device of await bridge.getDevices()) {
+        await bridge.listen(device.id);
+      }
+    } catch {
+      this.listening = false;
+    }
+  }
+
+  private async onWatchMessage(bridge: GarminBridge, event: { deviceId: string; json: string }) {
+    const message = parse(event.json);
+    if (message?.t !== 'wo' || !isWatchWorkout(message.w)) {
+      return;
+    }
+    const workout = message.w;
+    const outcome = this.importWorkout(workout);
+    this.receipt = {
+      imported: this.receipt.imported + (outcome === 'imported' ? 1 : 0),
+      duplicates: this.receipt.duplicates + (outcome === 'duplicate' ? 1 : 0),
+      failed: this.receipt.failed + (outcome === 'failed' ? 1 : 0),
+      lastName: workout.name,
+      lastAt: Date.now(),
+    };
+    this.receiptListeners.forEach((listener) => listener(this.receipt));
+    try {
+      await bridge.send(event.deviceId, JSON.stringify({ t: 'wa', uuid: workout.uuid, ok: outcome !== 'failed' }));
+    } catch {
+      // The watch keeps the workout and offers it again on the next sync.
+    }
+  }
+
+  /** Saves a watch workout as a session; a workout already imported is acknowledged again, not duplicated. */
+  importWorkout(workout: Parameters<typeof watchWorkoutToSession>[0]): 'imported' | 'duplicate' | 'failed' {
+    try {
+      if (readExistingSessionIds(this.db, [workout.uuid]).has(workout.uuid)) {
+        return 'duplicate';
+      }
+      const state = this.getState();
+      const program = state.program.savedPrograms[state.program.activePlanId];
+      const session = watchWorkoutToSession(workout, program);
+      this.db.transaction((tx) => writeSession(tx, session));
+      this.dispatch(sessionsChanged());
+      return 'imported';
+    } catch {
+      return 'failed';
+    }
+  }
 
   get isSupported() {
     return this.getBridge() !== undefined;

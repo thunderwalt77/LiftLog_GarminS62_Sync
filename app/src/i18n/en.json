@@ -840,5 +840,8 @@
   "garmin.watch.result.send_failed": "Sending failed. Is LiftLog installed on the watch?",
   "garmin.watch.result.no_reply": "The watch did not answer. Open LiftLog on the watch and try again.",
   "garmin.watch.result.rejected": "The watch rejected the plan. Try sending it again.",
-  "garmin.watch.result.error": "Something went wrong while sending. Copy the logs from Settings and share them."
+  "garmin.watch.result.error": "Something went wrong while sending. Copy the logs from Settings and share them.",
+  "garmin.watch.receive.title": "Workouts from the watch",
+  "garmin.watch.receive.body": "Keep LiftLog open on this phone, then press Sync on the watch's Sync screen.",
+  "garmin.watch.receive.result": "Saved {imported}, already in LiftLog {duplicates}, failed {failed}. Last: {name}"
 }

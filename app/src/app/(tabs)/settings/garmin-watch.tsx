@@ -1,10 +1,11 @@
 import SendIcon from '@expo/material-symbols/send.xml';
+import SyncIcon from '@expo/material-symbols/sync.xml';
 import { useServices } from '@/components/app-shell/services-provider';
 import { SegmentedGroup, SegmentListFormElement } from '@/components/foundation/segmented-list';
 import { SettingsPage } from '@/components/layout/settings-page';
 import type { WatchSyncResult } from '@/services/watch-sync/watch-sync-service';
 import { TranslationKey, useTranslate } from '@tolgee/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 
 const failureText: Record<Exclude<WatchSyncResult, { ok: true }>['reason'], TranslationKey> = {
@@ -22,6 +23,8 @@ export default function GarminWatchPage() {
   const { watchSyncService, logger } = useServices();
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<WatchSyncResult>();
+  const [receipt, setReceipt] = useState(watchSyncService.lastReceipt);
+  useEffect(() => watchSyncService.onReceipt(setReceipt), [watchSyncService]);
 
   const send = async () => {
     setSending(true);
@@ -54,6 +57,21 @@ export default function GarminWatchPage() {
           testID="garmin-send-programme"
           onPress={sending ? undefined : () => void send()}
           right={sending ? <ActivityIndicator /> : undefined}
+        />
+        <SegmentListFormElement
+          label={t('garmin.watch.receive.title')}
+          icon={SyncIcon}
+          systemImage="arrow.triangle.2.circlepath"
+          supportingText={
+            receipt.lastName
+              ? t('garmin.watch.receive.result', {
+                  imported: receipt.imported,
+                  duplicates: receipt.duplicates,
+                  failed: receipt.failed,
+                  name: receipt.lastName,
+                })
+              : t('garmin.watch.receive.body')
+          }
         />
       </SegmentedGroup>
     </SettingsPage>

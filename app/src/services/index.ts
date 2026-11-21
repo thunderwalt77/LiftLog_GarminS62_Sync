@@ -59,7 +59,7 @@ export function createServices(store: Store<RootState>, db: ExpoSQLiteDatabase, 
   const tolgee = getTolgee(preferenceService);
   const workoutWorkerService = new WorkoutWorker(store.dispatch, store.getState, tolgee);
   const healthExportService: HES = new HealthExportService();
-  const watchSyncService = new WatchSyncService(db, store.getState);
+  const watchSyncService = new WatchSyncService(db, store.getState, store.dispatch);
   const databaseMigrationService = new DatabaseMigrationService(
     db,
     logger,

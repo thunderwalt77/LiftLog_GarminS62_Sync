@@ -52,6 +52,7 @@ function fakeWatch(
       }
       return opts.sendStatus ?? 'SUCCESS';
     },
+    listen: async () => 'OK',
     addListener: (_event, l) => {
       listener = l;
       return { remove: () => (listener = undefined) };
@@ -66,6 +67,7 @@ describe('WatchSyncService.sendProgramme', () => {
     const result = await new WatchSyncService(
       db,
       () => state,
+      vi.fn(),
       () => watch.bridge,
     ).sendProgramme();
 
@@ -80,6 +82,7 @@ describe('WatchSyncService.sendProgramme', () => {
       await new WatchSyncService(
         db,
         () => state,
+        vi.fn(),
         () => watch.bridge,
       ).sendProgramme(),
     ).toEqual({
@@ -93,6 +96,7 @@ describe('WatchSyncService.sendProgramme', () => {
     const result = await new WatchSyncService(
       db,
       () => state,
+      vi.fn(),
       () => watch.bridge,
     ).sendProgramme();
 
@@ -106,6 +110,7 @@ describe('WatchSyncService.sendProgramme', () => {
       await new WatchSyncService(
         db,
         () => state,
+        vi.fn(),
         () => watch.bridge,
       ).sendProgramme(),
     ).toEqual({
@@ -121,6 +126,7 @@ describe('WatchSyncService.sendProgramme', () => {
       await new WatchSyncService(
         db,
         () => state,
+        vi.fn(),
         () => watch.bridge,
       ).sendProgramme(),
     ).toEqual({
@@ -134,6 +140,7 @@ describe('WatchSyncService.sendProgramme', () => {
     const service = new WatchSyncService(
       db,
       () => state,
+      vi.fn(),
       () => undefined,
     );
     expect(service.isSupported).toBe(false);

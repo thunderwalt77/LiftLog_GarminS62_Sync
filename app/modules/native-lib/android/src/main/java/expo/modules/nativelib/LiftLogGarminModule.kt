@@ -80,6 +80,25 @@ class LiftLogGarminModule : Module() {
             }
         }.runOnQueue(Queues.MAIN)
 
+        AsyncFunction("listen") { deviceId: String, promise: Promise ->
+            val ciq = connectIQ
+            if (ciq == null || !ready) {
+                promise.resolve("NOT_READY")
+            } else {
+                try {
+                    val device = ciq.knownDevices.orEmpty().firstOrNull { it.deviceIdentifier.toString() == deviceId }
+                    if (device == null) {
+                        promise.resolve("NO_DEVICE")
+                    } else {
+                        listen(ciq, device)
+                        promise.resolve("OK")
+                    }
+                } catch (e: Throwable) {
+                    promise.resolve(describe(e))
+                }
+            }
+        }.runOnQueue(Queues.MAIN)
+
         AsyncFunction("send") { deviceId: String, json: String, promise: Promise ->
             val ciq = connectIQ
             if (ciq == null || !ready) {
